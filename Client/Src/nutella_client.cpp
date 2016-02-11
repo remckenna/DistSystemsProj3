@@ -9,7 +9,7 @@ using std::string;
 int main(int argc, char** argv)
 {
 	NutellaFile file;
-	MultiCastServer server("239.0.2.1", 8953);
+	MultiCastServer server("239.0.0.1", 8953);
 
 	string test;
 	char buffer[200];

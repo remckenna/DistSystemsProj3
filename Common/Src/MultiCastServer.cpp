@@ -59,7 +59,7 @@ bool MultiCastServer::CreateSocket(string address, int port)
 		return false;
 	}
 
-	memcpy(&m_Addr, &m_GroupAddr, sizeof(m_Addr));
+	memcpy(&m_GroupAddr, &m_Addr, sizeof(m_Addr));
 	//inet_aton(address.c_str(), &m_GroupAddr.sin_addr);
 	m_GroupAddr.sin_addr.s_addr = inet_addr(address.c_str()); 
 

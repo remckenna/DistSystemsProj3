@@ -2,18 +2,22 @@
 #include "NutellaFile.h"
 #include "MessageTypes.h"
 #include "Utility.h"
+#include "MovieStream.h"
+#include "MoviePlayer.h"
 #include <iostream>
 #include <string>
 #include <ctime>
 #include <unistd.h>
 #include <sstream>
+#include <stdlib.h>
 
 using namespace std;
 using std::string;
 
 NutellaClient::NutellaClient() : m_Server("239.0.0.1", 8953),
 								m_bShouldRun(true),
-								m_bSearchResponseRecvd(false)
+								m_bSearchResponseRecvd(false),
+								m_bIsExpectingSearchResponse(false)
 {
 	string movieToStream;
 
@@ -27,6 +31,7 @@ NutellaClient::NutellaClient() : m_Server("239.0.0.1", 8953),
 		cout << "Enter the name of a movie to watch: ";
 		cin >> movieToStream;
 		m_Server.SendWithType(MessageTypes::SearchRequest, movieToStream);
+		m_bIsExpectingSearchResponse = true;
 
 		if(!WaitForSearchResponse())
 		{
@@ -45,14 +50,12 @@ bool NutellaClient::OnMessage(string msg, char messageType)
 		case MessageTypes::SearchRequest:
 		{
 			HandleSearchRequest(msg);
-			Utility::PrintDebugMessage("Search Request Received.");
 			break;
 		}
 		case MessageTypes::SearchSuccess:
 		{
-			HandleSuccessfulSearch(msg);
-			Utility::PrintDebugMessage("Search Response Received.");
 			m_bSearchResponseRecvd = true;
+			HandleSuccessfulSearch(msg);
 			break;
 		}
 		default:
@@ -83,17 +86,17 @@ bool NutellaClient::HandleSearchRequest(string query)
 	movieListFile.Load("test.nutella");
 	if(movieListFile.Contains(query))
 	{
+		MovieStream mStream;
+		// /mStream.CreateSocket();
+		string portAndIP = mStream.GetPortAndIP();
 		//Get the path to the movie file.
 		string moviePath = movieListFile.GetMoviePath(query);
 
+		mStream.Stream(moviePath);
 		//Send IP address and port to stream the movie from.
 
-		stringstream stream;
 
-		stream << "120.0.0.1" << endl;
-		stream << "8945" << endl;
-
-		m_Server.SendWithType(MessageTypes::SearchSuccess, stream.str());
+		m_Server.SendWithType(MessageTypes::SearchSuccess, portAndIP);
 		return true;
 	}
 
@@ -102,13 +105,20 @@ bool NutellaClient::HandleSearchRequest(string query)
 
 bool NutellaClient::HandleSuccessfulSearch(string portIPCombo)
 {
-	string ip, port;
-	istringstream stringStream(portIPCombo);
+	if(m_bIsExpectingSearchResponse)
+	{
+		string ip, port;
+		istringstream stringStream(portIPCombo);
 
-	getline(stringStream, ip);
-	getline(stringStream, port);
+		getline(stringStream, ip);
+		getline(stringStream, port);
 
-	Utility::PrintDebugMessage(ip);
-	Utility::PrintDebugMessage(port);
+		MoviePlayer player(40, atoi(port.c_str()), ip);
+		player.Play();
+		// Utility::PrintDebugMessage(ip);
+		// Utility::PrintDebugMessage(port);
+
+		m_bIsExpectingSearchResponse = false;
+	}
 	return true;
 }

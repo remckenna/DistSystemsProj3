@@ -2,6 +2,9 @@
 #define __MOVIEPLAYER_H__
 
 #include <string>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 
 using std::string;
 
@@ -13,6 +16,11 @@ private:
 	int m_StreamPort;
 
 	string m_StreamIP;
+
+	int m_StreamSocket;
+
+	bool ConnectToStream();
+
 
 public:
 	MoviePlayer(int playRate, int streamPort, string streamIP) : m_PlayRate(playRate),
@@ -34,5 +42,4 @@ public:
 	void SetPlayRate(int playRate) {m_PlayRate = playRate;}
 	int GetPlayRate() const {return m_PlayRate;}
 };
-
 #endif

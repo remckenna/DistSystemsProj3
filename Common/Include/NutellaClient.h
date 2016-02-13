@@ -15,6 +15,8 @@ private:
 
 	bool m_bSearchResponseRecvd;
 
+	bool m_bIsExpectingSearchResponse;
+
 public:
 	NutellaClient();
 	~NutellaClient() {}

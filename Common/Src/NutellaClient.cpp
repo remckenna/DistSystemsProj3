@@ -45,11 +45,13 @@ bool NutellaClient::OnMessage(string msg, char messageType)
 		case MessageTypes::SearchRequest:
 		{
 			HandleSearchRequest(msg);
+			Utility::PrintDebugMessage("Search Request Received.");
 			break;
 		}
 		case MessageTypes::SearchSuccess:
 		{
 			HandleSuccessfulSearch(msg);
+			Utility::PrintDebugMessage("Search Response Received.");
 			m_bSearchResponseRecvd = true;
 			break;
 		}

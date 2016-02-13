@@ -45,12 +45,12 @@ bool MultiCastServer::CreateSocket(string address, int port)
 		return false;
 	}
 
-	if(setsockopt(m_MultiCastSock, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) < 0)
-	{
-		Utility::PrintError("Error setting sockopt(1)");
-		Shutdown();
-		return false;
-	}
+	// if(setsockopt(m_MultiCastSock, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) < 0)
+	// {
+	// 	Utility::PrintError("Error setting sockopt(1)");
+	// 	Shutdown();
+	// 	return false;
+	// }
 
 	if(setsockopt(m_MultiCastSock, IPPROTO_IP, IP_ADD_MEMBERSHIP, &mreq, sizeof(mreq)) < 0)
 	{

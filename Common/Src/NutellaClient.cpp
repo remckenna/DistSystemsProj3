@@ -50,6 +50,7 @@ bool NutellaClient::OnMessage(string msg, char messageType)
 		case MessageTypes::SearchSuccess:
 		{
 			HandleSuccessfulSearch(msg);
+			m_bSearchResponseRecvd = true;
 			break;
 		}
 		default:

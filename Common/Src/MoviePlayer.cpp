@@ -3,6 +3,7 @@
 #include <string.h>
 #include <arpa/inet.h>
 #include <iostream>
+#include <netdb.h>
 
 using namespace std;
 
@@ -26,8 +27,13 @@ bool MoviePlayer::ConnectToStream()
 	struct sockaddr_in addr;
 	memset(&addr, 0, sizeof(sockaddr_in));
 
+	hostent* server;
+
+	server = gethostbyname(m_StreamIP.c_str());
+
 	addr.sin_family = AF_INET;
-	addr.sin_addr.s_addr = inet_addr(m_StreamIP.c_str());
+	//addr.sin_addr.s_addr = inet_addr(m_StreamIP.c_str());
+	memcpy((char*)&addr.sin_addr.s_addr, (char*)server->h_addr, server->h_length);
 	addr.sin_port = htons(m_StreamPort);
 
 	m_StreamSocket = socket(AF_INET, SOCK_STREAM, 0);

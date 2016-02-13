@@ -86,16 +86,14 @@ bool NutellaClient::HandleSearchRequest(string query)
 	movieListFile.Load("test.nutella");
 	if(movieListFile.Contains(query))
 	{
-		MovieStream mStream;
-		// /mStream.CreateSocket();
-		string portAndIP = mStream.GetPortAndIP();
+		MovieStream* mStream = new MovieStream();
+		mStream->CreateSocket();
+		string portAndIP = mStream->GetPortAndIP();
 		//Get the path to the movie file.
 		string moviePath = movieListFile.GetMoviePath(query);
 
-		mStream.Stream(moviePath);
+		mStream->Stream(moviePath);
 		//Send IP address and port to stream the movie from.
-
-
 		m_Server.SendWithType(MessageTypes::SearchSuccess, portAndIP);
 		return true;
 	}
@@ -113,10 +111,11 @@ bool NutellaClient::HandleSuccessfulSearch(string portIPCombo)
 		getline(stringStream, ip);
 		getline(stringStream, port);
 
+		Utility::PrintDebugMessage(ip);
+		Utility::PrintDebugMessage(port);
+
 		MoviePlayer player(40, atoi(port.c_str()), ip);
 		player.Play();
-		// Utility::PrintDebugMessage(ip);
-		// Utility::PrintDebugMessage(port);
 
 		m_bIsExpectingSearchResponse = false;
 	}

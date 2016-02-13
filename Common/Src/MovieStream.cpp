@@ -50,7 +50,6 @@ void* MovieStream::intern_Stream(void* stream)
  	socklen_t addrLen = sizeof(addr);
  	memset(&addr, 0, sizeof(addr));
 
- 	movieStream->CreateSocket();
 
  	cout << endl << movieStream->GetStreamSocket() << endl;
  	int newSock = accept(movieStream->GetStreamSocket(), (sockaddr*)&addr, &addrLen);
@@ -60,6 +59,7 @@ void* MovieStream::intern_Stream(void* stream)
  		pthread_exit(NULL);
  	}
 
+ 	Utility::PrintDebugMessage("Connected to movie player.");
  	string test = "test stream.";
 
  	while(1)
@@ -87,6 +87,7 @@ string MovieStream::GetPortAndIP()
 
 		inet_ntop(AF_INET, &addr, buffer, INET_ADDRSTRLEN);
 		IP = string(buffer);
+		//IP = "127.0.0.1";
 		port = ntohs(addr.sin_port);
 
 		stream << IP << endl;

@@ -45,12 +45,12 @@ bool MultiCastServer::CreateSocket(string address, int port)
 		return false;
 	}
 
-	// if(setsockopt(m_MultiCastSock, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) < 0)
-	// {
-	// 	Utility::PrintError("Error setting sockopt(1)");
-	// 	Shutdown();
-	// 	return false;
-	// }
+	if(setsockopt(m_MultiCastSock, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on)) < 0)
+	{
+		Utility::PrintError("Error setting sockopt(1)");
+		Shutdown();
+		return false;
+	}
 
 	if(setsockopt(m_MultiCastSock, IPPROTO_IP, IP_ADD_MEMBERSHIP, &mreq, sizeof(mreq)) < 0)
 	{
@@ -59,13 +59,13 @@ bool MultiCastServer::CreateSocket(string address, int port)
 		return false;
 	}
 
-	// int loop = 0;
-	// if(setsockopt(m_MultiCastSock, IPPROTO_IP, IP_MULTICAST_LOOP, &loop, sizeof(loop)) < 0)
-	// {
-	// 	Utility::PrintError("Error setting sockopt(3)");
-	// 	Shutdown();
-	// 	return false;
-	// }
+	int loop = 0;
+	if(setsockopt(m_MultiCastSock, IPPROTO_IP, IP_MULTICAST_LOOP, &loop, sizeof(loop)) < 0)
+	{
+		Utility::PrintError("Error setting sockopt(3)");
+		Shutdown();
+		return false;
+	}
 
 	if(bind(m_MultiCastSock, (struct sockaddr*)&m_Addr, sizeof(m_Addr)) < 0)
 	{

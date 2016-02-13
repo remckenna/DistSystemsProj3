@@ -9,7 +9,7 @@ CC			=	g++
 FILETYPE 	= 	cpp
 CFLAGS 		= 	-Wall -g
 MAIN 		= 	../nutella_client
-LIBS		=
+LIBS		=	-lpthread
 
 
 # Directory names

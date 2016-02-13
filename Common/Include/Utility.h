@@ -10,6 +10,8 @@ using std::string;
 namespace Utility {
 
 	void PrintError(string msg);
+
+	void PrintDebugMessage(string msg);
 };
 
 #endif

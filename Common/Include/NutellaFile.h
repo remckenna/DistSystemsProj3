@@ -17,6 +17,10 @@ private:
 public:
 	NutellaFile(){}
 
+	bool Contains(string key){return (m_sFileContents.count(key) > 0);}
+
+	string GetMoviePath(string name) {return m_sFileContents[name];}
+
 	bool Load(string path);
 
 	void Print();

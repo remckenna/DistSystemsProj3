@@ -1,5 +1,6 @@
 #include "MultiCastServer.h"
 #include "Utility.h"
+#include "MessageTypes.h"
 #include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
@@ -10,7 +11,9 @@
 MultiCastServer::MultiCastServer(string address, int port) :
 											m_MultiCastSock(-1),
 											m_MultiCastAddr(address),
-											m_Port(port)										
+											m_Port(port),
+											m_bIsListening(false),
+											m_bStopListenThread(false)										
 {
 	CreateSocket(m_MultiCastAddr, m_Port);
 }
@@ -35,6 +38,7 @@ bool MultiCastServer::CreateSocket(string address, int port)
 	mreq.imr_interface.s_addr = htonl(INADDR_ANY);
 
 	m_MultiCastSock = socket(AF_INET, SOCK_DGRAM, 0);
+	
 	if(m_MultiCastSock < 0)
 	{
 		Utility::PrintError("Error Creating mcast socket");
@@ -54,6 +58,14 @@ bool MultiCastServer::CreateSocket(string address, int port)
 		Shutdown();
 		return false;
 	}
+
+	// int loop = 0;
+	// if(setsockopt(m_MultiCastSock, IPPROTO_IP, IP_MULTICAST_LOOP, &loop, sizeof(loop)) < 0)
+	// {
+	// 	Utility::PrintError("Error setting sockopt(3)");
+	// 	Shutdown();
+	// 	return false;
+	// }
 
 	if(bind(m_MultiCastSock, (struct sockaddr*)&m_Addr, sizeof(m_Addr)) < 0)
 	{
@@ -85,6 +97,22 @@ size_t MultiCastServer::Send(const void* buffer, size_t bufferSize)
 	return bytesSent;
 }
 
+bool MultiCastServer::SendWithType(char type, string msg)
+{
+	bool result = true;
+	char* msgAndHeader = new char[msg.size() + 1];
+	msgAndHeader[0] = type;
+	memcpy(msgAndHeader+1, msg.c_str(), msg.size());
+
+	if(Send(msgAndHeader, msg.size() + 1) < 0)
+	{
+		Utility::PrintDebugMessage("Couldn't send search request.");
+		result = false;
+	}
+
+	delete[] msgAndHeader;
+	return result;
+}
 
 
 void MultiCastServer::Shutdown()
@@ -93,4 +121,70 @@ void MultiCastServer::Shutdown()
 	{
 		Utility::PrintError("Error shutdown mcast server");
 	}
+}
+
+void MultiCastServer::Listen()
+{
+	if(!m_bIsListening)
+	{
+		m_bIsListening = true;
+		if(pthread_create(&m_ListeningThreadID, NULL, &MultiCastServer::RecvLoop, this) != 0)
+		{
+			Utility::PrintDebugMessage("Error Starting Listen thread.");
+		}
+	}
+	else
+	{
+		Utility::PrintDebugMessage("Server Already Listening.");
+	}
+
+}
+
+void* MultiCastServer::RecvLoop(void* multiCastServer)
+{
+	MultiCastServer* server = static_cast<MultiCastServer*>(multiCastServer);
+	if(server)
+	{
+		char buffer[MAX_RECEIVE_BUFFER];
+		ssize_t bytesReceived = 0;
+		char header = 0x00;
+		while(!server->m_bStopListenThread)
+		{
+			bytesReceived = server->Receive(&buffer, MAX_RECEIVE_BUFFER);
+			header = MultiCastServer::GetAndStripHeader(buffer, bytesReceived);
+
+			if(!server->m_MsgHandler->OnMessage(string(buffer), header))
+			{
+				Utility::PrintDebugMessage("Network message received, but not handled.");
+			}
+		}
+	}
+	else
+	{
+		Utility::PrintDebugMessage("The expected message handler was not present.");
+	}
+
+	pthread_exit(NULL);
+}
+
+char MultiCastServer::GetAndStripHeader(char message[], ssize_t size)
+{
+	char header = *message;
+	int i = 0;
+	if(message)
+	{
+		for(i = 0; (i + 1) < size; i++)
+		{
+			message[i] = message[i + 1]; 
+		}
+
+		message[i] = '\0'; 
+	}
+	else
+	{
+		Utility::PrintDebugMessage("Message in GetAndStripHeader was null.");
+	}
+
+
+	return header;
 }

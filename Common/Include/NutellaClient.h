@@ -24,5 +24,7 @@ public:
 	bool WaitForSearchResponse();
 
 	bool HandleSearchRequest(string query);
+
+	bool HandleSuccessfulSearch(string portIPCombo);
 };
 #endif

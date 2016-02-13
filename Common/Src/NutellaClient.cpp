@@ -1,9 +1,12 @@
 #include "NutellaClient.h"
 #include "NutellaFile.h"
 #include "MessageTypes.h"
+#include "Utility.h"
 #include <iostream>
 #include <string>
 #include <ctime>
+#include <unistd.h>
+#include <sstream>
 
 using namespace std;
 using std::string;
@@ -46,8 +49,7 @@ bool NutellaClient::OnMessage(string msg, char messageType)
 		}
 		case MessageTypes::SearchSuccess:
 		{
-			m_bSearchResponseRecvd = true;
-			cout << msg << endl;
+			HandleSuccessfulSearch(msg);
 			break;
 		}
 		default:
@@ -59,8 +61,9 @@ bool NutellaClient::OnMessage(string msg, char messageType)
 bool NutellaClient::WaitForSearchResponse()
 {	
 	clock_t startTime = clock();
+
 	while(!m_bSearchResponseRecvd)
-	{
+	{	
 		clock_t curTime = clock();
 		clock_t tickSoFar = curTime - startTime;
 		double timeInSeconds = tickSoFar / (double) CLOCKS_PER_SEC;
@@ -79,9 +82,30 @@ bool NutellaClient::HandleSearchRequest(string query)
 	{
 		//Get the path to the movie file.
 		string moviePath = movieListFile.GetMoviePath(query);
-		m_Server.SendWithType(MessageTypes::SearchSuccess, moviePath);
+
+		//Send IP address and port to stream the movie from.
+
+		stringstream stream;
+
+		stream << "120.0.0.1" << endl;
+		stream << "8945" << endl;
+
+		m_Server.SendWithType(MessageTypes::SearchSuccess, stream.str());
 		return true;
 	}
 
 	return false;
+}
+
+bool NutellaClient::HandleSuccessfulSearch(string portIPCombo)
+{
+	string ip, port;
+	istringstream stringStream(portIPCombo);
+
+	getline(stringStream, ip);
+	getline(stringStream, port);
+
+	Utility::PrintDebugMessage(ip);
+	Utility::PrintDebugMessage(port);
+	return true;
 }

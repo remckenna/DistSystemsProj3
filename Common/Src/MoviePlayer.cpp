@@ -16,7 +16,7 @@ void MoviePlayer::Play()
 	{
 		Utility::PrintDebugMessage("Beginning movie...");
 		char buffer[2000];
-		memset(&buffer, 0, 2000)
+		memset(&buffer, 0, 2000);
 		while(1)
 		{
 			//system("clear");

@@ -5,6 +5,8 @@
 #include <arpa/inet.h>
 #include <iostream>
 #include <netdb.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 using namespace std;
 
@@ -14,14 +16,19 @@ void MoviePlayer::Play()
 	{
 		Utility::PrintDebugMessage("Beginning movie...");
 		char buffer[2000];
+		memset(&buffer, 0, 2000)
 		while(1)
 		{
+			//system("clear");
+			printf("\033[2J");
+  			printf("\033[0;0f");
 			recv(m_StreamSocket, &buffer, 2000, 0);
 			if(buffer[0] == MessageTypes::MovieEnd)
 			{
 				break;
 			}
-			cout << string(buffer) << endl;
+			//cout << string(buffer) << endl;
+			printf("%s", string(buffer).c_str());
 		}
 	}
 

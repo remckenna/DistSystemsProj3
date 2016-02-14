@@ -9,6 +9,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <unistd.h>
+#include <istream>
 
 using namespace std;
 
@@ -65,12 +66,29 @@ void* MovieStream::intern_Stream(void* stream)
  	string test = "test stream.";
 
 
- 	LoadMovie(movieStream->m_MoviePath);
- 	while(1)
- 	{
+ 	string movie = LoadMovie(movieStream->m_MoviePath);
+
+
+ 	istringstream iMovieStream(movie);
+
+ 		string frame, line;
+ 		while(getline(iMovieStream, line))
+ 		{
+ 			if(line == "end")
+ 			{
+ 				sleep(1);
+ 				send(newSock, frame.c_str(), frame.size(), 0);
+ 				frame.clear();
+ 				continue;
+ 			}
+ 			else
+ 			{
+ 				frame.append(line + '\n');
+ 				line.clear();
+ 			}
+ 		}
 
  		//send(newSock, test.c_str(), test.size(), 0);
- 	}
  	pthread_exit(NULL);
 }
 
@@ -108,9 +126,6 @@ string MovieStream::LoadMovie(string moviePath)
 	FILE* movieFile = fopen(fullMoviePath.c_str(), "r");
 	char* line;
 	size_t len = 0;
-	
-	Utility::PrintDebugMessage(fullMoviePath);
-	Utility::PrintDebugMessage(moviePath);
 
 	if(!movieFile)
 	{
@@ -120,10 +135,7 @@ string MovieStream::LoadMovie(string moviePath)
 
 	while((getline(&line, &len, movieFile) != EOF))
 	{
-		Utility::PrintDebugMessage("test");
 		result.append(string(line));
 	}
-
-	Utility::PrintDebugMessage(result + "test");
 	return result;
 }

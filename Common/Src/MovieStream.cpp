@@ -94,7 +94,7 @@ void* MovieStream::intern_Stream(void* stream)
 		Utility::PrintError("Error on final send");
 	}
 
-	close(newSock);
+	//close(newSock);
  		//send(newSock, test.c_str(), test.size(), 0);
  	pthread_exit(NULL);
 }

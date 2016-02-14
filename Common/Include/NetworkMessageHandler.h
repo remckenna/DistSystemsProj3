@@ -12,7 +12,7 @@ public:
 
 	virtual ~NetworkMessageHandler(){}
 
-	virtual bool OnMessage(string msg, char messageType) = 0;
+	virtual bool OnMessage(string msg, char messageType, string fromIP) = 0;
 };
 
 #endif

@@ -13,6 +13,8 @@ private:
 
 	pthread_t m_tid;
 
+	string m_MoviePath;
+
 	static void* intern_Stream(void* movieStream);
 
 public:
@@ -23,9 +25,11 @@ public:
 
 	bool CreateSocket();
 
-	string GetPortAndIP();
+	string GetPort();
 
 	int GetStreamSocket() const {return m_StreamSocket;}
+
+	static string LoadMovie(string moviePath);
 };
 
 #endif

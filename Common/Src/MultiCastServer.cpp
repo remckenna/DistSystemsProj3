@@ -59,13 +59,13 @@ bool MultiCastServer::CreateSocket(string address, int port)
 		return false;
 	}
 
-	// int loop = 0;
-	// if(setsockopt(m_MultiCastSock, IPPROTO_IP, IP_MULTICAST_LOOP, &loop, sizeof(loop)) < 0)
-	// {
-	// 	Utility::PrintError("Error setting sockopt(3)");
-	// 	Shutdown();
-	// 	return false;
-	// }
+	int loop = 0;
+	if(setsockopt(m_MultiCastSock, IPPROTO_IP, IP_MULTICAST_LOOP, &loop, sizeof(loop)) < 0)
+	{
+		Utility::PrintError("Error setting sockopt(3)");
+		Shutdown();
+		return false;
+	}
 
 	if(bind(m_MultiCastSock, (struct sockaddr*)&m_Addr, sizeof(m_Addr)) < 0)
 	{
@@ -77,12 +77,12 @@ bool MultiCastServer::CreateSocket(string address, int port)
 	return true;
 }
 
-size_t MultiCastServer::Receive(void* buffer, size_t bufferSize)
+size_t MultiCastServer::Receive(void* buffer, size_t bufferSize, struct sockaddr* fromAddr)
 {
 	size_t bytesReceived = -1;
-	socklen_t addrLen = sizeof(m_Addr);
+	socklen_t addrLen = sizeof(*fromAddr);
 
-	bytesReceived = recvfrom(m_MultiCastSock, buffer, bufferSize, 0, (struct sockaddr*)&m_Addr, &addrLen);
+	bytesReceived = recvfrom(m_MultiCastSock, buffer, bufferSize, 0, fromAddr, &addrLen);
 
 	return bytesReceived;
 }
@@ -150,10 +150,16 @@ void* MultiCastServer::RecvLoop(void* multiCastServer)
 		char header = 0x00;
 		while(!server->m_bStopListenThread)
 		{
-			bytesReceived = server->Receive(&buffer, MAX_RECEIVE_BUFFER);
+			sockaddr_in fromAddr;
+			char ipBuffer[INET_ADDRSTRLEN];
+
+			bytesReceived = server->Receive(&buffer, MAX_RECEIVE_BUFFER, (sockaddr*)&fromAddr);
+
+			string fromAddress(inet_ntoa(fromAddr.sin_addr));
+
 			header = MultiCastServer::GetAndStripHeader(buffer, bytesReceived);
 
-			if(!server->m_MsgHandler->OnMessage(string(buffer), header))
+			if(!server->m_MsgHandler->OnMessage(string(buffer), header,  fromAddress))
 			{
 				Utility::PrintDebugMessage("Network message received, but not handled.");
 			}

@@ -42,7 +42,7 @@ NutellaClient::NutellaClient() : m_Server("239.0.0.1", 8953),
 	m_Server.Shutdown();
 }
 
-bool NutellaClient::OnMessage(string msg, char messageType)
+bool NutellaClient::OnMessage(string msg, char messageType, string fromIP)
 {
 	bool bWasHandled = true;
 	switch(messageType)
@@ -55,7 +55,7 @@ bool NutellaClient::OnMessage(string msg, char messageType)
 		case MessageTypes::SearchSuccess:
 		{
 			m_bSearchResponseRecvd = true;
-			HandleSuccessfulSearch(msg);
+			HandleSuccessfulSearch(msg, fromIP);
 			break;
 		}
 		default:
@@ -88,33 +88,26 @@ bool NutellaClient::HandleSearchRequest(string query)
 	{
 		MovieStream* mStream = new MovieStream();
 		mStream->CreateSocket();
-		string portAndIP = mStream->GetPortAndIP();
 		//Get the path to the movie file.
 		string moviePath = movieListFile.GetMoviePath(query);
 
 		mStream->Stream(moviePath);
 		//Send IP address and port to stream the movie from.
-		m_Server.SendWithType(MessageTypes::SearchSuccess, portAndIP);
+		m_Server.SendWithType(MessageTypes::SearchSuccess, mStream->GetPort());
 		return true;
 	}
 
 	return false;
 }
 
-bool NutellaClient::HandleSuccessfulSearch(string portIPCombo)
+bool NutellaClient::HandleSuccessfulSearch(string port, string IP)
 {
 	if(m_bIsExpectingSearchResponse)
 	{
-		string ip, port;
-		istringstream stringStream(portIPCombo);
-
-		getline(stringStream, ip);
-		getline(stringStream, port);
-
-		Utility::PrintDebugMessage(ip);
+		Utility::PrintDebugMessage(IP);
 		Utility::PrintDebugMessage(port);
 
-		MoviePlayer player(40, atoi(port.c_str()), ip);
+		MoviePlayer player(40, atoi(port.c_str()), IP);
 		player.Play();
 
 		m_bIsExpectingSearchResponse = false;

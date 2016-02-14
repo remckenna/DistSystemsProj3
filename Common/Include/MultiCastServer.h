@@ -43,7 +43,7 @@ private:
 public:
 	MultiCastServer(string address, int port);
 
-	size_t Receive(void* buffer, size_t bufferSize);
+	size_t Receive(void* buffer, size_t bufferSize, struct sockaddr* fromAddr);
 
 	size_t Send(const void* buffer, size_t bufferSize);
 

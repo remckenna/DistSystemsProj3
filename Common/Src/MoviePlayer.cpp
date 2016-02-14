@@ -1,5 +1,6 @@
 #include "MoviePlayer.h"
 #include "Utility.h"
+#include "MessageTypes.h"
 #include <string.h>
 #include <arpa/inet.h>
 #include <iostream>
@@ -16,6 +17,10 @@ void MoviePlayer::Play()
 		while(1)
 		{
 			recv(m_StreamSocket, &buffer, 2000, 0);
+			if(buffer[0] == MessageTypes::MovieEnd)
+			{
+				break;
+			}
 			cout << string(buffer) << endl;
 		}
 	}

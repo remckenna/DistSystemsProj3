@@ -21,12 +21,12 @@ public:
 	NutellaClient();
 	~NutellaClient() {}
 
-	virtual bool OnMessage(string msg, char messageType);
+	virtual bool OnMessage(string msg, char messageType, string fromIP);
 
 	bool WaitForSearchResponse();
 
 	bool HandleSearchRequest(string query);
 
-	bool HandleSuccessfulSearch(string portIPCombo);
+	bool HandleSuccessfulSearch(string port, string IP);
 };
 #endif

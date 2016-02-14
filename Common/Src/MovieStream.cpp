@@ -7,11 +7,14 @@
 #include <sstream>
 #include <pthread.h>
 #include <iostream>
+#include <stdio.h>
+#include <unistd.h>
 
 using namespace std;
 
 bool MovieStream::Stream(string moviePath)
 {
+	m_MoviePath = moviePath;
 	pthread_create(&m_tid, NULL, &MovieStream::intern_Stream, this);
 	return true;
 }
@@ -50,7 +53,6 @@ void* MovieStream::intern_Stream(void* stream)
  	socklen_t addrLen = sizeof(addr);
  	memset(&addr, 0, sizeof(addr));
 
-
  	cout << endl << movieStream->GetStreamSocket() << endl;
  	int newSock = accept(movieStream->GetStreamSocket(), (sockaddr*)&addr, &addrLen);
  	if(newSock < 0)
@@ -62,16 +64,17 @@ void* MovieStream::intern_Stream(void* stream)
  	Utility::PrintDebugMessage("Connected to movie player.");
  	string test = "test stream.";
 
+
+ 	LoadMovie(movieStream->m_MoviePath);
  	while(1)
  	{
- 		send(newSock, test.c_str(), test.size(), 0);
- 	}
- 	
 
+ 		//send(newSock, test.c_str(), test.size(), 0);
+ 	}
  	pthread_exit(NULL);
 }
 
-string MovieStream::GetPortAndIP()
+string MovieStream::GetPort()
 {
 	struct sockaddr_in addr;
 	socklen_t addrLen = sizeof(addr);
@@ -81,16 +84,9 @@ string MovieStream::GetPortAndIP()
 	memset(&addr, 0, sizeof(sockaddr));
 	if(getsockname(m_StreamSocket, (sockaddr*)&addr, &addrLen) == 0)
 	{
-		char buffer[INET_ADDRSTRLEN];
-		string IP;
 		int port;
-
-		inet_ntop(AF_INET, &addr, buffer, INET_ADDRSTRLEN);
-		IP = string(buffer);
-		//IP = "127.0.0.1";
 		port = ntohs(addr.sin_port);
 
-		stream << IP << endl;
 		stream << port << endl;
 	}
 	else
@@ -100,4 +96,34 @@ string MovieStream::GetPortAndIP()
 
 
 	return stream.str();
+}
+
+string MovieStream::LoadMovie(string moviePath)
+{
+	string result;
+	char* workingDir;
+	string fullMoviePath = string(workingDir = getcwd(NULL, 0));
+	fullMoviePath.append(moviePath);
+	delete workingDir; 
+	FILE* movieFile = fopen(fullMoviePath.c_str(), "r");
+	char* line;
+	size_t len = 0;
+	
+	Utility::PrintDebugMessage(fullMoviePath);
+	Utility::PrintDebugMessage(moviePath);
+
+	if(!movieFile)
+	{
+		Utility::PrintError("Unabled to open movie file");
+		return result;
+	}
+
+	while((getline(&line, &len, movieFile) != EOF))
+	{
+		Utility::PrintDebugMessage("test");
+		result.append(string(line));
+	}
+
+	Utility::PrintDebugMessage(result + "test");
+	return result;
 }

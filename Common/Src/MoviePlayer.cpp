@@ -36,6 +36,7 @@ void* MoviePlayer::Intern_Play(void* moviePlayer)
 		}
 		if(buffer[0] == (char)0x03)
 		{
+			Utility::PrintDebugMessage("SD:FLKJSD:GKLJFSDG");
 			break;
 		}
 		//cout << string(buffer) << endl;

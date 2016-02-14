@@ -30,22 +30,22 @@ void* MoviePlayer::Intern_Play(void* moviePlayer)
 		//system("clear");
 		printf("\033[2J");
 		printf("\033[0;0f");
-		Utility::PrintDebugMessage("Receiving");
+		//Utility::PrintDebugMessage("Receiving");
 		if(recv(player->m_StreamSocket, &buffer, 2000, 0) < 1)
 		{
 			break;
 		}
 		if(buffer[0] == (char)0x03)
 		{
-			Utility::PrintDebugMessage("SD:FLKJSD:GKLJFSDG");
+			printf("\033[2J");
+			printf("\033[0;0f");
 			break;
 		}
 		//cout << string(buffer) << endl;
 		printf("%s", string(buffer).c_str());
 	}
 
-	printf("\033[2J");
-	printf("\033[0;0f");
+
 	cout << "Enter the name of a movie to watch: ";
 
 	close(player->m_StreamSocket);

@@ -90,7 +90,7 @@ void* MovieStream::intern_Stream(void* stream)
 	char movieEndMessage[1];
 	movieEndMessage[0] = MessageTypes::MovieEnd;
 	Utility::PrintDebugMessage("Sending final movie message.");
-	if(send(newSock, &movieEndMessage, 1, 0) < 1)
+	if(send(newSock, movieEndMessage, 1, 0) < 1)
 	{
 		Utility::PrintError("Error on final send");
 	}

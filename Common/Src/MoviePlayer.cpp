@@ -47,6 +47,7 @@ void* MoviePlayer::Intern_Play(void* moviePlayer)
 		printf("%s", string(buffer).c_str());
 	}
 
+	Utility::PrintDebugMessage("SD:GOKHSDG:O");
 	//printf("Enter the name of a movie to watch: ");
 	cout << "Enter the name of a movie to watch: ";
 	close(player->m_StreamSocket);

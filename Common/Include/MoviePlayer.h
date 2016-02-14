@@ -5,6 +5,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <pthread.h>
 
 using std::string;
 
@@ -19,14 +20,17 @@ private:
 
 	int m_StreamSocket;
 
+	pthread_t m_Tid;
+
 	bool ConnectToStream();
 
+	static void* Intern_Play(void* MoviePlayer);
 
 public:
 	MoviePlayer(int playRate, int streamPort, string streamIP) : m_PlayRate(playRate),
 																m_StreamPort(streamPort),
 																m_StreamIP(streamIP)
-    {}
+    { }
 
 
 	~MoviePlayer() {}

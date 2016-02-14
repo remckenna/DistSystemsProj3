@@ -28,5 +28,6 @@ public:
 	bool HandleSearchRequest(string query);
 
 	bool HandleSuccessfulSearch(string port, string IP);
+
 };
 #endif

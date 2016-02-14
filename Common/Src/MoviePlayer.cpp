@@ -8,30 +8,41 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
 using namespace std;
 
 void MoviePlayer::Play()
 {
 	if(ConnectToStream())
 	{
-		Utility::PrintDebugMessage("Beginning movie...");
-		char buffer[2000];
-		memset(&buffer, 0, 2000);
-		while(1)
+		pthread_create(&m_Tid, NULL, &MoviePlayer::Intern_Play, this);
+	}
+}
+
+void* MoviePlayer::Intern_Play(void* moviePlayer)
+{
+	MoviePlayer* player = static_cast<MoviePlayer*>(moviePlayer);
+	Utility::PrintDebugMessage("Beginning movie...");
+	char buffer[2000];
+	memset(&buffer, 0, 2000);
+	while(1)
+	{
+		//system("clear");
+		printf("\033[2J");
+		printf("\033[0;0f");
+		recv(player->m_StreamSocket, &buffer, 2000, 0);
+		if(buffer[0] == MessageTypes::MovieEnd)
 		{
-			//system("clear");
+			cout << "Movie finished." << endl;
 			printf("\033[2J");
-  			printf("\033[0;0f");
-			recv(m_StreamSocket, &buffer, 2000, 0);
-			if(buffer[0] == MessageTypes::MovieEnd)
-			{
-				break;
-			}
-			//cout << string(buffer) << endl;
-			printf("%s", string(buffer).c_str());
+			printf("\033[0;0f");
+			break;
 		}
+		//cout << string(buffer) << endl;
+		printf("%s", string(buffer).c_str());
 	}
 
+	pthread_exit(NULL);
 }
 
 bool MoviePlayer::ConnectToStream()

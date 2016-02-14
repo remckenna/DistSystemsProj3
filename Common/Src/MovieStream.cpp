@@ -54,7 +54,6 @@ void* MovieStream::intern_Stream(void* stream)
  	socklen_t addrLen = sizeof(addr);
  	memset(&addr, 0, sizeof(addr));
 
- 	cout << endl << movieStream->GetStreamSocket() << endl;
  	int newSock = accept(movieStream->GetStreamSocket(), (sockaddr*)&addr, &addrLen);
  	if(newSock < 0)
  	{
@@ -87,6 +86,14 @@ void* MovieStream::intern_Stream(void* stream)
  				line.clear();
  			}
  		}
+
+	char movieEndMessage[1];
+	movieEndMessage[0] = MessageTypes::MovieEnd;
+	Utility::PrintDebugMessage("Sending final movie message.");
+	if(send(newSock, &movieEndMessage, 1, 0) < 1)
+	{
+		Utility::PrintError("Error on final send");
+	}
 
  		//send(newSock, test.c_str(), test.size(), 0);
  	pthread_exit(NULL);

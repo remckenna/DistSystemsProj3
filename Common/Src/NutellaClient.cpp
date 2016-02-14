@@ -107,8 +107,8 @@ bool NutellaClient::HandleSuccessfulSearch(string port, string IP)
 		Utility::PrintDebugMessage(IP);
 		Utility::PrintDebugMessage(port);
 
-		MoviePlayer player(40, atoi(port.c_str()), IP);
-		player.Play();
+		MoviePlayer* player = new MoviePlayer(40, atoi(port.c_str()), IP);
+		player->Play();
 
 		m_bIsExpectingSearchResponse = false;
 	}

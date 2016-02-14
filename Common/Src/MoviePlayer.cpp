@@ -34,19 +34,20 @@ void* MoviePlayer::Intern_Play(void* moviePlayer)
 		//Utility::PrintDebugMessage("Receiving");
 		if(recv(player->m_StreamSocket, &buffer, 2000, 0) < 0)
 		{
-			bShoudlRun = false;
+			break;
 		}		
-		printf("%c\n", buffer[0]);
+		//printf("%c\n", buffer[0]);
 		if(string(buffer) == "done")
 		{
-			Utility::PrintDebugMessage("SD:GOKHSDG:O");
-			bShoudlRun = false;
+			//Utility::PrintDebugMessage("SD:GOKHSDG:O");
+			break;
 		}
 		//cout << string(buffer) << endl;
 		printf("%s", string(buffer).c_str());
 	}
 
-	printf("Enter the name of a movie to watch: ");
+	//printf("Enter the name of a movie to watch: ");
+	cout << "Enter the name of a movie to watch: ";
 	close(player->m_StreamSocket);
 	pthread_exit(NULL);
 }

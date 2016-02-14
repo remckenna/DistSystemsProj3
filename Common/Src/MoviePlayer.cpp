@@ -40,7 +40,6 @@ void* MoviePlayer::Intern_Play(void* moviePlayer)
 		//printf("%c\n", buffer[0]);
 		if(string(buffer) == "done")
 		{
-			Utility::PrintDebugMessage("SD:GOKHSDG:O");
 			break;
 		}
 		//cout << string(buffer) << endl;

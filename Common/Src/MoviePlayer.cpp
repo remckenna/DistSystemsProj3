@@ -24,28 +24,29 @@ void* MoviePlayer::Intern_Play(void* moviePlayer)
 	MoviePlayer* player = static_cast<MoviePlayer*>(moviePlayer);
 	Utility::PrintDebugMessage("Beginning movie...");
 	char buffer[2000];
-	memset(&buffer, 0, 2000);
-	while(1)
+	bool bShoudlRun = true;	
+	while(bShoudlRun)
 	{
+		memset(&buffer, 0, 2000);
 		//system("clear");
 		printf("\033[2J");
 		printf("\033[0;0f");
 		//Utility::PrintDebugMessage("Receiving");
 		if(recv(player->m_StreamSocket, &buffer, 2000, 0) < 0)
 		{
-			break;
-		}
-		if(buffer[0] == MessageTypes::MovieEnd)
+			bShoudlRun = false;
+		}		
+		printf("%c\n", buffer[0]);
+		if(string(buffer) == "done")
 		{
-			printf("\033[2J");
-			printf("\033[0;0f");
-			cout << "Enter the name of a movie to watch: ";
-			break;
+			Utility::PrintDebugMessage("SD:GOKHSDG:O");
+			bShoudlRun = false;
 		}
 		//cout << string(buffer) << endl;
 		printf("%s", string(buffer).c_str());
 	}
 
+	printf("Enter the name of a movie to watch: ");
 	close(player->m_StreamSocket);
 	pthread_exit(NULL);
 }

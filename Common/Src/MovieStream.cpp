@@ -70,32 +70,31 @@ void* MovieStream::intern_Stream(void* stream)
 
  	istringstream iMovieStream(movie);
 
- 		string frame, line;
- 		while(getline(iMovieStream, line))
- 		{
- 			if(line == "end")
- 			{
- 				sleep(1);
- 				send(newSock, frame.c_str(), frame.size(), 0);
- 				frame.clear();
- 				continue;
- 			}
- 			else
- 			{
- 				frame.append(line + '\n');
- 				line.clear();
- 			}
- 		}
+	string frame, line;
+	while(getline(iMovieStream, line))
+	{
+		if(line == "end")
+		{
+			sleep(1);
+			send(newSock, frame.c_str(), frame.size(), 0);
+			frame.clear();
+			continue;
+		}
+		else
+		{
+			frame.append(line + '\n');
+			line.clear();
+		}
+	}
 
-	char movieEndMessage[1];
-	movieEndMessage[0] = MessageTypes::MovieEnd;
+	string movieEnd = "done";
 	Utility::PrintDebugMessage("Sending final movie message.");
-	if(send(newSock, movieEndMessage, 1, 0) < 1)
+	if(send(newSock, movieEnd.c_str(), movieEnd.size(), 0) < 0)
 	{
 		Utility::PrintError("Error on final send");
 	}
 
-	close(newSock);
+	//close(newSock);
  		//send(newSock, test.c_str(), test.size(), 0);
  	pthread_exit(NULL);
 }

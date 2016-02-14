@@ -7,7 +7,7 @@
 #include <netdb.h>
 #include <stdio.h>
 #include <stdlib.h>
-
+#include <unistd.h>
 
 using namespace std;
 
@@ -33,15 +33,17 @@ void* MoviePlayer::Intern_Play(void* moviePlayer)
 		recv(player->m_StreamSocket, &buffer, 2000, 0);
 		if(buffer[0] == MessageTypes::MovieEnd)
 		{
-			cout << "Enter the name of a movie to watch: ";
-			printf("\033[2J");
-			printf("\033[0;0f");
 			break;
 		}
 		//cout << string(buffer) << endl;
 		printf("%s", string(buffer).c_str());
 	}
 
+	cout << "Enter the name of a movie to watch: ";
+	printf("\033[2J");
+	printf("\033[0;0f");
+
+	close(player->m_StreamSocket);
 	pthread_exit(NULL);
 }
 

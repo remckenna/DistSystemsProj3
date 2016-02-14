@@ -25,6 +25,7 @@ void* MoviePlayer::Intern_Play(void* moviePlayer)
 	Utility::PrintDebugMessage("Beginning movie...");
 	char buffer[2000];
 	bool bShoudlRun = true;	
+	
 	while(bShoudlRun)
 	{
 		memset(&buffer, 0, 2000);
@@ -39,7 +40,7 @@ void* MoviePlayer::Intern_Play(void* moviePlayer)
 		//printf("%c\n", buffer[0]);
 		if(string(buffer) == "done")
 		{
-			//Utility::PrintDebugMessage("SD:GOKHSDG:O");
+			Utility::PrintDebugMessage("SD:GOKHSDG:O");
 			break;
 		}
 		//cout << string(buffer) << endl;

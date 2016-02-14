@@ -34,7 +34,7 @@ void* MoviePlayer::Intern_Play(void* moviePlayer)
 		{
 			break;
 		}
-		if(buffer[0] == MessageTypes::MovieEnd)
+		if(buffer[0] == 0x03)
 		{
 			break;
 		}
@@ -42,9 +42,9 @@ void* MoviePlayer::Intern_Play(void* moviePlayer)
 		printf("%s", string(buffer).c_str());
 	}
 
-	cout << "Enter the name of a movie to watch: ";
 	printf("\033[2J");
 	printf("\033[0;0f");
+	cout << "Enter the name of a movie to watch: ";
 
 	close(player->m_StreamSocket);
 	pthread_exit(NULL);

@@ -75,7 +75,7 @@ void* MovieStream::intern_Stream(void* stream)
 	{
 		if(line == "end")
 		{
-			usleep(500);
+			usleep(500000);
 			send(newSock, frame.c_str(), frame.size(), 0);
 			frame.clear();
 			continue;

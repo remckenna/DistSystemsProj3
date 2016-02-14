@@ -34,7 +34,7 @@ void* MoviePlayer::Intern_Play(void* moviePlayer)
 		{
 			break;
 		}
-		if(buffer[0] == 0x03)
+		if(buffer[0] == (char)0x03)
 		{
 			break;
 		}

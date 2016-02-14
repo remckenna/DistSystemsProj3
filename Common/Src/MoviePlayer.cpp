@@ -30,7 +30,10 @@ void* MoviePlayer::Intern_Play(void* moviePlayer)
 		//system("clear");
 		printf("\033[2J");
 		printf("\033[0;0f");
-		recv(player->m_StreamSocket, &buffer, 2000, 0);
+		if(recv(player->m_StreamSocket, &buffer, 2000, 0) < 0)
+		{
+			break;
+		}
 		if(buffer[0] == MessageTypes::MovieEnd)
 		{
 			break;

@@ -35,7 +35,7 @@ void* MoviePlayer::Intern_Play(void* moviePlayer)
 		{
 			break;
 		}
-		if(buffer[0] == (char)0x03)
+		if(buffer[0] == MessageTypes::MovieEnd)
 		{
 			printf("\033[2J");
 			printf("\033[0;0f");
